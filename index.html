@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-  <img src="./270311597_345959510264752_5386186812504650798_n.png" width="100%" />
+  <img src="./daily_quest.png" width="100%" />
   <h2>
     SLP to PHP Today <br />
     <img src="https://assets.coingecko.com/coins/images/10366/small/SLP.png" alt="SLP"> <br />
@@ -51,7 +51,7 @@
 
         // get and set "SLP to PHP Value Today"
         const slpToPHPTodayDisplay = document.querySelector("#slp-to-php-today");
-        const slpToPHPTodayValue = parseFloat(data["smooth-love-potion"].php);
+        const slpToPHPTodayValue = parseFloat(data["smooth-love-potion"].php).toFixed(2);
         slpToPHPTodayDisplay.innerHTML = "₱"+slpToPHPTodayValue;
 
         // SLP to date
