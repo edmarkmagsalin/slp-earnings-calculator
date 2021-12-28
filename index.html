@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLP Earnings Calc</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+    body {
+      text-align: center;
+    }
+    div {
+      padding-bottom: 1rem;
+    }
+    input {
+      padding: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>
+    SLP to PHP Today <br />
+    <img src="https://assets.coingecko.com/coins/images/10366/small/SLP.png" alt="SLP"> <br />
+    <span id="slp-to-php-today">
+      Loading...
+    </span>
+  </h2>
+  <div>
+    <label for="slp-to-date">
+      <strong>SLP to date</strong> <br />
+      <input type="number" name="slp-to-date" id="slp-to-date" value="0">
+    </label>
+  </div>
+  <div>
+    <label for="percentage">
+      <strong>Percentage</strong> <br />
+      <input type="number" name="percentage" id="percentage" value="30">
+    </label>
+  </div>
+  <h4>Earnings: <span id="total-earnings">Loading...</span></h4>
+  <img src="./270311597_345959510264752_5386186812504650798_n.png" width="100%" />
+  <script>
+content://com.coloros.filemanager/root/storage/emulated/0/project%2012%20-%2028%20-%2021/1619348407620.jpg
+
+    fetch("https://api.coingecko.com/api/v3/simple/price?ids=smooth-love-potion&vs_currencies=php")
+      .then(response => response.json())
+      .then(data => {
+
+        // get and set "SLP to PHP Value Today"
+        const slpToPHPTodayDisplay = document.querySelector("#slp-to-php-today");
+        const slpToPHPTodayValue = parseFloat(data["smooth-love-potion"].php);
+        slpToPHPTodayDisplay.innerHTML = "₱"+slpToPHPTodayValue;
+
+        // SLP to date
+        const url_string = window.location.href;
+        const url = new URL(url_string);
+        const slpToDateFromURL = parseFloat(url.searchParams.get("slp-to-date"));
+        const slpToDateInput = document.querySelector("#slp-to-date");
+        let slpToDateValue;
+        if(slpToDateFromURL) {
+          slpToDateInput.value = slpToDateFromURL;
+          slpToDateValue = parseFloat(slpToDateFromURL);
+        } else {
+          slpToDateValue = slpToDateInput.value;
+        }
+        
+        // percentage
+        const percentageInput = document.querySelector("#percentage");
+        let percentageValue = parseFloat(percentageInput.value);
+        
+        // get earnings
+        const getTotalEarnings = () => parseFloat(slpToDateValue * percentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+
+        // set earnings
+        const totalEarningsDisplay = document.querySelector("#total-earnings");
+        totalEarningsDisplay.innerHTML = "₱"+getTotalEarnings();
+
+        // recompute
+        slpToDateInput.addEventListener("keyup", e => {
+          const newSLPToDateValue = e.target.value
+          const newTotalEarnings = parseFloat(newSLPToDateValue * percentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+          totalEarningsDisplay.innerHTML = "₱"+newTotalEarnings;
+        })
+        percentageInput.addEventListener("keyup", e => {
+          const newPercentageValue = e.target.value
+          const newTotalEarnings = parseFloat(slpToDateValue * newPercentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+          totalEarningsDisplay.innerHTML = "₱"+newTotalEarnings;
+        })
+
+      })
+  </script>
+</body>
+</html>
