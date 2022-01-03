@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-  <img src="./daily_quest.png" width="100%" style="max-width: 600px;"/>
+  <img src="./daily_quest.png" width="100%" style="max-width: 400px;"/>
   <h2>
     SLP to PHP Today <br />
     <img src="https://assets.coingecko.com/coins/images/10366/small/SLP.png" alt="SLP"> <br />
@@ -31,18 +31,26 @@
     </span>
   </h2>
   <div>
-    <label for="slp-to-date">
+    <label for="slp_to_date_onset">
+      <strong>SLP to date onset / Claimed SLP</strong> <br />
+      <input type="number" name="slp_to_date_onset" id="slp_to_date_onset" value="0">
+    </label>
+  </div>
+  <div>
+    <label for="slp_to_date">
       <strong>SLP to date</strong> <br />
-      <input type="number" name="slp-to-date" id="slp-to-date" value="0">
+      <input type="number" name="slp_to_date" id="slp_to_date" value="0">
     </label>
   </div>
   <div>
     <label for="percentage">
       <strong>Percentage</strong> <br />
-      <input type="number" name="percentage" id="percentage" value="30">
+      <input type="number" name="percentage" id="percentage" value="40">
     </label>
   </div>
-  <h4>Earnings: <span id="total-earnings">Loading...</span></h4>
+  <h4>Total SLP: <span id="total_slp">Loading...</span></h4>
+  <h4>SLP owned: <span id="slp_owned">Loading...</span></h4>
+  <h4>Earnings: <span id="total_earnings">Loading...</span></h4>
   <script>
 
     fetch("https://api.coingecko.com/api/v3/simple/price?ids=smooth-love-potion&vs_currencies=php")
@@ -57,36 +65,74 @@
         // SLP to date
         const url_string = window.location.href;
         const url = new URL(url_string);
-        const slpToDateFromURL = parseFloat(url.searchParams.get("slp-to-date"));
-        const slpToDateInput = document.querySelector("#slp-to-date");
+        const slpToDateFromURL = parseFloat(url.searchParams.get("slp_to_date"));
+        const slpToDateOnsetFromURL = parseFloat(url.searchParams.get("slp_to_date_onset"));
+        const slpToDateInput = document.querySelector("#slp_to_date");
+        const slpToDateOnsetInput = document.querySelector("#slp_to_date_onset");
         let slpToDateValue;
+        let slpToDateOnsetValue;
         if(slpToDateFromURL) {
           slpToDateInput.value = slpToDateFromURL;
           slpToDateValue = parseFloat(slpToDateFromURL);
         } else {
           slpToDateValue = slpToDateInput.value;
         }
+        if(slpToDateOnsetFromURL) {
+          slpToDateOnsetInput.value = slpToDateOnsetFromURL;
+          slpToDateOnsetValue = parseFloat(slpToDateOnsetFromURL);
+        } else {
+          slpToDateOnsetValue = slpToDateOnsetInput.value;
+        }
         
         // percentage
         const percentageInput = document.querySelector("#percentage");
         let percentageValue = parseFloat(percentageInput.value);
         
+        // get total slp
+        const getTotalSLP = () => parseFloat(slpToDateValue - slpToDateOnsetValue);
+        
+        // set total slp
+        const totalSLP = document.querySelector("#total_slp");
+        totalSLP.innerHTML = getTotalSLP()+" SLP";
+        
+        // get slp owned
+        const getSLPOwned = () => parseFloat(getTotalSLP() * percentageValue / 100);
+        
+        // set slp owned
+        const slpOwned = document.querySelector("#slp_owned");
+        slpOwned.innerHTML = getSLPOwned()+" SLP";
+        
         // get earnings
-        const getTotalEarnings = () => parseFloat(slpToDateValue * percentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+        const getTotalEarnings = () => parseFloat(getSLPOwned() * slpToPHPTodayValue).toFixed(2);
 
         // set earnings
-        const totalEarningsDisplay = document.querySelector("#total-earnings");
+        const totalEarningsDisplay = document.querySelector("#total_earnings");
         totalEarningsDisplay.innerHTML = "₱"+getTotalEarnings();
 
         // recompute
         slpToDateInput.addEventListener("keyup", e => {
           const newSLPToDateValue = e.target.value
-          const newTotalEarnings = parseFloat(newSLPToDateValue * percentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+          const newTotalSLP = parseFloat(newSLPToDateValue - slpToDateOnsetValue);
+          totalSLP.innerHTML = newTotalSLP+" SLP";
+          const newSLPOwned = parseFloat(newTotalSLP * percentageValue / 100);
+          slpOwned.innerHTML = newSLPOwned+" SLP";
+          const newTotalEarnings = parseFloat(newSLPOwned * slpToPHPTodayValue).toFixed(2);
           totalEarningsDisplay.innerHTML = "₱"+newTotalEarnings;
         })
         percentageInput.addEventListener("keyup", e => {
           const newPercentageValue = e.target.value
-          const newTotalEarnings = parseFloat(slpToDateValue * newPercentageValue / 100 * slpToPHPTodayValue).toFixed(2);
+          const newSLPOwned = parseFloat((slpToDateValue - slpToDateOnsetValue) * newPercentageValue / 100);
+          slpOwned.innerHTML = newSLPOwned+" SLP";
+          const newTotalEarnings = parseFloat(newSLPOwned * slpToPHPTodayValue).toFixed(2);
+          totalEarningsDisplay.innerHTML = "₱"+newTotalEarnings;
+        })
+        slpToDateOnsetInput.addEventListener("keyup", e => {
+          const newSLPToDateOnsetValue = e.target.value
+          const newTotalSLP = parseFloat(slpToDateValue - newSLPToDateOnsetValue);
+          totalSLP.innerHTML = newTotalSLP+" SLP";
+          const newSLPOwned = parseFloat(newTotalSLP * percentageValue / 100);
+          slpOwned.innerHTML = newSLPOwned+" SLP";
+          const newTotalEarnings = parseFloat(newSLPOwned * slpToPHPTodayValue).toFixed(2);
           totalEarningsDisplay.innerHTML = "₱"+newTotalEarnings;
         })
 
