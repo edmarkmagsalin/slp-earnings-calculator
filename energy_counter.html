@@ -7,14 +7,44 @@
   <title>Energy Counter</title>
 </head>
 <style>
-  input[type=number] {
-    padding: 30px 40px;
+  body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  input[type=text] {
+    padding: 20px;
     font-size: 50px;
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 27px;
+    text-align: center;
+  }
+  button {
+    margin: 0.5em;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
   }
 </style>
 <body>
-  <input type="number" value="3">
+  <button id="increase">&uarr;</button>
+  <input type="text" id="energy" value="3">
+  <button id="decrease">&darr;</button>
+  <script>
+    const increaseButton = document.querySelector("#increase");
+    const decreaseButton = document.querySelector("#decrease");
+    const energy = document.querySelector("#energy");
+
+    increaseButton.addEventListener('click', () => {
+      energy.value = parseInt(energy.value) + 1;
+    })
+
+    decreaseButton.addEventListener('click', () => {
+      energy.value = parseInt(energy.value) - 1;
+    })
+  </script>
 </body>
 </html>
